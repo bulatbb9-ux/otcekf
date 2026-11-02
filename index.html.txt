@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ELF OTC GUARANT</title>
+    <!-- Официальный скрипт Telegram WebApp -->
+    <script src="https://telegram.org"></script>
+    <!-- Шрифты Google Fonts для премиального вида -->
+    <link href="https://googleapis.com" rel="stylesheet">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            background-color: #0b141c;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Шапка мини-апп */
+        .header {
+            text-align: center;
+            margin-top: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #34a1e5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 15px rgba(52, 161, 229, 0.4);
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #708499;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+
+        /* Главная карточка баланса */
+        .card {
+            background: linear-gradient(145deg, #13222d, #0e1a24);
+            border: 1px solid #1c323d;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 360px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: #34a1e5;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(28, 50, 61, 0.5);
+        }
+
+        .balance-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .currency-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e1e6eb;
+        }
+
+        .balance-value {
+            font-size: 16px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        /* Кнопки управления */
+        .btn-container {
+            width: 100%;
+            max-width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s ease, opacity 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+
+        .btn-withdraw {
+            background-color: #24bfa5;
+            color: #ffffff;
+        }
+
+        .btn-support {
+            background-color: #17212b;
+            color: #34a1e5;
+            border: 1px solid #1c323d;
+        }
+
+        /* Футер подвала */
+        .footer {
+            margin-top: auto;
+            padding-top: 30px;
+            font-size: 11px;
+            color: #485866;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Шапка -->
+    <div class="header">
+        <h1 id="app-title">ELF OTC GUARANT</h1>
+        <p id="user-status">Premium OTC Трейдер 🔥</p>
+    </div>
+
+    <!-- Карточка балансов -->
+    <div class="card">
+        <div class="card-title">
+            <span>💰</span> МОЙ БАЛАНС КАРТ
+        </div>
+        
+        <div class="balance-row">
+            <div class="currency-name">RU Рубли (RUB)</div>
+            <div class="balance-value" id="bal-rub">0.00 ₽</div>
+        </div>
+        
+        <div class="balance-row">
+            <div class="currency-name">🇺🇸 Доллары (USD)</div>
+            <div class="balance-value" id="bal-usd">0.00 $</div>
+        </div>
+
+        <div class="balance-row">
+            <div class="currency-name">💎 Тонкоины (TON)</div>
+            <div class="balance-value" id="bal-ton">0.00 TON</div>
+        </div>
+    </div>
+
+    <!-- Контейнер с кнопками -->
+    <div class="btn-container">
+        <button class="btn btn-withdraw" onclick="handleWithdraw()">
+            <span>🏦</span> Вывести средства
+        </button>
+        <button class="btn btn-support" onclick="handleSupport()">
+            <span>📞</span> Связаться с поддержкой
+        </button>
+    </div>
+
+    <!-- Юзернейм бота внизу -->
+    <div class="footer" id="bot-footer">@OtcElfGuarantsBot</div>
+
+    <script>
+        // Инициализируем Telegram WebApp API
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Разворачиваем мини-апп на весь экран телефона
+        
+        // 🔥 НЕУБИВАЕМАЯ ПРОВЕРКА ДАННЫХ: Защита от вылетов вне Telegram чата
+        let username = "Трейдер";
+        let rubBalance = "0.00";
+        let usdBalance = "0.00";
+        let tonBalance = "0.00";
+
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            // Если зашли из бота, берем реальные данные
+            username = tg.initDataUnsafe.user.username ? "@" + tg.initDataUnsafe.user.username : tg.initDataUnsafe.user.first_name;
+            
+            // Заглушка подтягивания балансов (можно связать с твоей базой данных через API)
+            rubBalance = "0.00"; 
+            usdBalance = "0.00";
+            tonBalance = "0.00";
+        } else {
+            // Режим безопасного ПК-тестирования (больше никаких алертов с ошибками!)
+            console.log("Mini App запущен вне Telegram чата. Включен демонстрационный режим.");
+            username = "Демо-Аккаунт";
+        }
+
+        // Заполняем интерфейс данными без единого вылета
+        document.getElementById('bal-rub').innerText = rubBalance + " ₽";
+        document.getElementById('bal-usd').innerText = usdBalance + " $";
+        document.getElementById('bal-ton').innerText = tonBalance + " TON";
+
+        // Функция кнопки вывода средств
+        function handleWithdraw() {
+            tg.sendData("action_withdraw"); // Шлём боту триггер клика
+            tg.close(); // Плавно закрываем мини-апп
+        }
+
+        // Функция кнопки поддержки
+        function handleSupport() {
+            // Автоматический редирект в чат поддержки менеджера маркетплейса
+            window.open("https://t.me", "_blank");
+        }
+    </script>
+</body>
+</html>
