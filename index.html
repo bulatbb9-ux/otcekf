@@ -377,16 +377,13 @@
         tg.expand();
         tg.ready();
 
-        // Функция переключения вкладок приложения
         function switchTab(tabName, element) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
-            
             document.getElementById(`content-${tabName}`).classList.add('active');
             element.classList.add('active');
         }
 
-        // Парсинг данных пользователя из Telegram
         let userId = "000000000";
         let botUsername = "OtcElfGuarantsBot";
 
@@ -394,10 +391,9 @@
             userId = tg.initDataUnsafe.user.id;
         }
         
-        // 🔥 ЖЕЛЕЗОБЕТОННОЕ ИСПРАВЛЕНИЕ: Ссылка теперь гарантированно сгенерируется без зависаний!
         document.getElementById('ref-link').innerText = "https://t.me" + botUsername + "?start=ref_" + userId;
 
-        // Отправка формы создания сделки в Python-бот
+        // 🔥 БРОНЕБОЙНЫЙ СИГНАЛ: Шлём команду прямой текстовой ссылкой в обход блокировок Telegram!
         function submitDeal() {
             const currency = document.getElementById('deal-currency').value;
             const amount = document.getElementById('deal-amount').value.trim();
@@ -412,19 +408,19 @@
                 return;
             }
 
-            // Формируем чистую строку данных для хэндлера бота
-            const resultString = "create_deal:" + currency + ":" + amount + ":" + desc;
-            tg.sendData(resultString);
+            // Кодируем текст, чтобы пробелы не сломали ссылку
+            const textCommand = `/create_deal_${currency}_${amount}_${desc.to_string().replace(/[^a-zA-Z0-9а-яА-Я ]/g, "")}`;
+            
+            // Открываем диалог с ботом и шлем ему команду текстом
+            tg.openTelegramLink(`https://t.me${botUsername}?start=msg_${btoa(unescape(encodeURIComponent(textCommand)))}`);
             tg.close();
         }
 
-        // Функция кнопки вывода средств
         function submitWithdraw() {
-            tg.sendData("open_withdraw_menu");
+            tg.openTelegramLink(`https://t.me${botUsername}?start=withdraw_menu`);
             tg.close();
         }
 
-        // Функция копирования реф-ссылки в буфер обмена
         function copyRefLink() {
             const linkText = document.getElementById('ref-link').innerText;
             navigator.clipboard.writeText(linkText).then(() => {
