@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ELF OTC GUARANT</title>
+    <!-- Официальный скрипт ядра Telegram WebApp -->
     <script src="https://tg.dev"></script>
     <link href="https://googleapis.com" rel="stylesheet">
     
@@ -45,7 +46,7 @@
         <h1>ELF OTC GUARANT</h1>
     </div>
 
-    <!-- ВКЛАДКА 1: СДЕЛКИ -->
+    <!-- В К Л А Д К А  1:  С Д Е Л К И -->
     <div id="content-deals" class="tab-content active">
         <div class="card">
             <div class="card-title"><span>🤝</span> Создать новую сделку</div>
@@ -76,31 +77,31 @@
         </div>
     </div>
 
-    <!-- ВКЛАДКА 2: КОШЕЛЕК -->
+    <!-- В К Л А Д К А  2:  К О Ш Е Л Ё К -->
     <div id="content-wallet" class="tab-content">
         <div class="card">
             <div class="card-title"><span>💰</span> Мой баланс карт & крипты</div>
-            <div class="balance-row"><div class="currency-info">💎 GRAM</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">🇷🇺 RUB</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">🇺🇸 USD</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">🇪🇺 EUR</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">🇰🇿 KZT</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">🇺🇦 UAH</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">🇧🇾 BYN</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">💵 USDT</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">🪙 BNB</div><div class="balance-value">0.00</div></div>
-            <div class="balance-row"><div class="currency-info">☀️ SOL</div><div class="balance-value">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">💎 GRAM</div><div class="balance-value" id="view-gram">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">🇷🇺 RUB</div><div class="balance-value" id="view-rub">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">🇺🇸 USD</div><div class="balance-value" id="view-usd">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">🇪🇺 EUR</div><div class="balance-value" id="view-eur">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">🇰🇿 KZT</div><div class="balance-value" id="view-kzt">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">🇺🇦 UAH</div><div class="balance-value" id="view-uah">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">🇧🇾 BYN</div><div class="balance-value" id="view-byn">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">💵 USDT</div><div class="balance-value" id="view-usdt">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">🪙 BNB</div><div class="balance-value" id="view-bnb">0.00</div></div>
+            <div class="balance-row"><div class="currency-info">☀️ SOL</div><div class="balance-value" id="view-sol">0.00</div></div>
             <button class="btn btn-withdraw" onclick="submitWithdraw()">🏦 Вывести средства</button>
         </div>
     </div>
 
-    <!-- ВКЛАДКА 3: РЕФЕРАЛЫ -->
+    <!-- В К Л А Д К А  3:  Р Е Ф Е Р А Л Ы -->
     <div id="content-referrals" class="tab-content">
         <div class="card">
             <div class="card-title"><span>👥</span> Реферальная система</div>
             <div class="ref-stats">
-                <div class="stat-box"><div class="stat-val">0</div><div class="stat-lbl">Приглашено</div></div>
-                <div class="stat-box"><div class="stat-val">0.00 ₽</div><div class="stat-lbl">Заработано</div></div>
+                <div class="stat-box"><div class="stat-val" id="ui-ref-count">0</div><div class="stat-lbl">Приглашено</div></div>
+                <div class="stat-box"><div class="stat-val" id="ui-ref-earned">0.00 ₽</div><div class="stat-lbl">Заработано</div></div>
             </div>
             <div class="form-group">
                 <label>Ваша уникальная реф-ссылка:</label>
@@ -112,6 +113,7 @@
 
     <div class="footer">@OtcElfGuarantsBot</div>
 
+    <!-- Таб-бар -->
     <div class="nav-tabs">
         <div class="tab-item active" onclick="switchTab('deals', this)"><span class="tab-icon">🤝</span><span>Сделки</span></div>
         <div class="tab-item" onclick="switchTab('wallet', this)"><span class="tab-icon">💰</span><span>Кошелёк</span></div>
@@ -119,7 +121,13 @@
     </div>
 
     <script>
-        // Полностью автономный скрипт без единой точки зависания!
+        const tg = window.Telegram.WebApp;
+        
+        try {
+            tg.expand();
+            tg.ready();
+        } catch(e) {}
+
         function switchTab(tabName, element) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
@@ -127,7 +135,7 @@
             element.classList.add('active');
         }
 
-        // Берём ID из строки браузера или ставим нули
+        // Парсинг ID напрямую из параметров инициализации
         let userId = "000000000";
         try {
             const urlParams = new URLSearchParams(window.location.search);
@@ -140,42 +148,32 @@
                     userId = tg.initDataUnsafe.user.id;
                 }
             }
-       } catch(e) {}
+        } catch(e) {}
         
-        // 🔥 Железобетонная сборка реф-ссылки без единой точки зависания
+        // Железная сборка реф-ссылки в обход кэша
         document.getElementById('ref-link').innerText = "https://t.me_" + userId;
 
-        // Чистая и неубиваемая функция отправки формы создания сделки
+        // Чистая функция отправки формы создания сделки
         function submitDeal() {
             const currency = document.getElementById('deal-currency').value;
             const amount = document.getElementById('deal-amount').value.trim();
             const desc = document.getElementById('deal-desc').value.trim();
+            if (!amount || parseFloat(amount) <= 0 || !desc) { alert("❌ Заполните все поля корректно!"); return; }
             
-            if (!amount || parseFloat(amount) <= 0 || !desc) { 
-                alert("❌ Заполните все поля корректно!"); 
-                return; 
-            }
-            
-            // Очищаем текст условий, чтобы не ломать структуру глубокой ссылки
             const cleanDesc = desc.replace(/[^a-zA-Z0-9а-яА-Я]/g, "");
             
-            // Принудительно выстреливаем команду через прямое ядро мессенджера
+            // Прямой вызов глубокой ссылки ядра Telegram (работает везде)
             window.location.href = "tg://resolve?domain=OtcElfGuarantsBot&start=deal-" + currency + "-" + amount + "-" + cleanDesc;
-            
-            setTimeout(() => { 
-                window.Telegram?.WebApp?.close(); 
-            }, 500);
+            setTimeout(() => { window.Telegram?.WebApp?.close(); }, 500);
         }
 
         // Чистая функция кнопки вывода средств
         function submitWithdraw() {
             window.location.href = "tg://resolve?domain=OtcElfGuarantsBot&start=withdraw";
-            setTimeout(() => { 
-                window.Telegram?.WebApp?.close(); 
-            }, 500);
+            setTimeout(() => { window.Telegram?.WebApp?.close(); }, 500);
         }
 
-        // Чистая функция копирования реферальной ссылки
+        // Чистая функция копирования реф-ссылки в буфер
         function copyRefLink() {
             const tempInput = document.createElement("input");
             tempInput.value = document.getElementById('ref-link').innerText;
