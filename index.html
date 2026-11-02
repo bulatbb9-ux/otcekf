@@ -104,7 +104,7 @@
             </div>
             <div class="form-group">
                 <label>Ваша уникальная реф-ссылка:</label>
-                <div class="ref-link-box" id="ref-link">Загрузка...</div>
+                <div class="ref-link-box" id="ref-link">https://t.me</div>
             </div>
             <button class="btn btn-primary" onclick="copyRefLink()">📋 Скопировать ссылку</button>
         </div>
@@ -118,15 +118,8 @@
         <div class="tab-item" onclick="switchTab('referrals', this)"><span class="tab-icon">👥</span><span>Рефералы</span></div>
     </div>
 
-            <script>
-        // Подключаем ядро WebApp
-        const tg = window.Telegram.WebApp;
-        
-        try {
-            tg.expand();
-            tg.ready();
-        } catch(e) {}
-
+    <script>
+        // Полностью автономный скрипт без единой точки зависания!
         function switchTab(tabName, element) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
@@ -134,51 +127,66 @@
             element.classList.add('active');
         }
 
-        // Автономное получение ID без привязки к готовности ядра
+        // Берём ID из строки браузера или ставим нули
         let userId = "000000000";
-        let botUsername = "OtcElfGuarantsBot";
-
-        if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            userId = tg.initDataUnsafe.user.id || "000000000";
-        }
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('tgWebAppStartParam')) {
+                const p = urlParams.get('tgWebAppStartParam');
+                if (p.startsWith('ref_')) userId = p.substring(4);
+            } else {
+                const tg = window.Telegram?.WebApp;
+                if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    userId = tg.initDataUnsafe.user.id;
+                }
+            }
+       } catch(e) {}
         
-        // Ссылка теперь запишется в любом случае, даже без инициализации ядра Telegram!
-        document.getElementById('ref-link').innerText = "https://t.me" + botUsername + "?start=ref_" + userId;
+        // 🔥 Железобетонная сборка реф-ссылки без единой точки зависания
+        document.getElementById('ref-link').innerText = "https://t.me_" + userId;
 
-        // 🔥 НЕУБИВАЕМЫЙ МЕТОД: Шлём команду через прямую ссылку. Работает при ЛЮБОМ типе кнопок!
+        // Чистая и неубиваемая функция отправки формы создания сделки
         function submitDeal() {
             const currency = document.getElementById('deal-currency').value;
             const amount = document.getElementById('deal-amount').value.trim();
             const desc = document.getElementById('deal-desc').value.trim();
             
-            if (!amount || parseFloat(amount) <= 0 || !desc) {
-                alert("❌ Заполните все поля корректно!");
-                return;
+            if (!amount || parseFloat(amount) <= 0 || !desc) { 
+                alert("❌ Заполните все поля корректно!"); 
+                return; 
             }
-
-            // Очищаем описание от пробелов и спецсимволов, чтобы ссылка не ломалась
-            const cleanDesc = desc.replace(/[^a-zA-Z0-9а-яА-Я]/g, "");
-
-            // Формируем прямую глубокую ссылку для отправки команды боту
-            const startParam = "deal-" + currency + "-" + amount + "-" + cleanDesc;
             
-            // Открываем команду в чате бота. Это обойдет любые блокировки sendData!
-            tg.openTelegramLink("https://t.me" + botUsername + "?start=" + startParam);
-            tg.close();
+            // Очищаем текст условий, чтобы не ломать структуру глубокой ссылки
+            const cleanDesc = desc.replace(/[^a-zA-Z0-9а-яА-Я]/g, "");
+            
+            // Принудительно выстреливаем команду через прямое ядро мессенджера
+            window.location.href = "tg://resolve?domain=OtcElfGuarantsBot&start=deal-" + currency + "-" + amount + "-" + cleanDesc;
+            
+            setTimeout(() => { 
+                window.Telegram?.WebApp?.close(); 
+            }, 500);
         }
 
+        // Чистая функция кнопки вывода средств
         function submitWithdraw() {
-            tg.openTelegramLink("https://t.me" + botUsername + "?start=withdraw");
-            tg.close();
+            window.location.href = "tg://resolve?domain=OtcElfGuarantsBot&start=withdraw";
+            setTimeout(() => { 
+                window.Telegram?.WebApp?.close(); 
+            }, 500);
         }
 
+        // Чистая функция копирования реферальной ссылки
         function copyRefLink() {
-            const linkText = document.getElementById('ref-link').innerText;
-            navigator.clipboard.writeText(linkText).then(() => {
-                alert("✅ Реферальная ссылка скопирована!");
-            });
+            const tempInput = document.createElement("input");
+            tempInput.value = document.getElementById('ref-link').innerText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+            alert("✅ Ссылка скопирована!");
         }
     </script>
 </body>
 </html>
+        
 
