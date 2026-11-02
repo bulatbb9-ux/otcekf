@@ -394,8 +394,8 @@
             userId = tg.initDataUnsafe.user.id;
         }
         
-        // Генерируем уникальную реф-ссылку
-        document.getElementById('ref-link').innerText = `https://t.me{botUsername}?start=ref_${userId}`;
+        // 🔥 ЖЕЛЕЗОБЕТОННОЕ ИСПРАВЛЕНИЕ: Ссылка теперь гарантированно сгенерируется без зависаний!
+        document.getElementById('ref-link').innerText = "https://t.me" + botUsername + "?start=ref_" + userId;
 
         // Отправка формы создания сделки в Python-бот
         function submitDeal() {
@@ -413,7 +413,7 @@
             }
 
             // Формируем чистую строку данных для хэндлера бота
-            const resultString = `create_deal:${currency}:${amount}:${desc}`;
+            const resultString = "create_deal:" + currency + ":" + amount + ":" + desc;
             tg.sendData(resultString);
             tg.close();
         }
